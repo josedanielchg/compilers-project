@@ -77,6 +77,9 @@ espacio		= [ \t]+
 "loop"           {	if(debug) System.out.println("token LOOP");
 			return sf.newSymbol("LOOP",sym.LOOP);
 			}
+"mod"           {	if(debug) System.out.println("token MOD");
+			return sf.newSymbol("MOD",sym.MOD);
+			}
 "repeat"        {	if(debug) System.out.println("token REPEAT");
 			return sf.newSymbol("REPEAT",sym.REPEAT);
 			}

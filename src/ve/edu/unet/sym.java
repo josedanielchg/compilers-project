@@ -9,6 +9,7 @@ package ve.edu.unet;
 public class sym {
   /* terminals */
   public static final int TIMES = 17;
+  public static final int MOD = 29;
   public static final int READ = 8;
   public static final int OVER = 18;
   public static final int LT = 14;
@@ -66,7 +67,8 @@ public class sym {
   "RBRACKET",
   "FOR",
   "LOOP",
-  "COMMA"
+  "COMMA",
+  "MOD"
   };
 }
 
