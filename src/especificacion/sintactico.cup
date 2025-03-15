@@ -73,6 +73,9 @@ terminal INT;
 terminal BOOL;
 terminal LBRACKET;
 terminal RBRACKET;
+terminal FOR;
+terminal LOOP;
+terminal COMMA;
 
 /* Simbolos No Terminales */
 non terminal program;
@@ -84,6 +87,7 @@ non terminal NodoBase repeat_stmt;
 non terminal NodoBase assign_stmt;
 non terminal NodoBase read_stmt;
 non terminal NodoBase write_stmt;
+non terminal NodoBase for_stmt;
 non terminal NodoBase decl_stmt;
 non terminal NodoBase decl_seq;
 non terminal NodoBase exp;
@@ -139,19 +143,19 @@ decl_seq    ::= decl_seq:ini decl_stmt:d	{: if(debug) System.out.println("\t reg
 		;
 
 decl_stmt  ::=  INT ID:variable SEMI
-                     {:
+                     {:     if(debug) System.out.println("\t regla 15a");
                             RESULT = new NodoDeclaracion(tipoVar.entero,variable,1);
                      :}
             |   INT ID:variable LBRACKET NUM:size RBRACKET SEMI
-                    {:
+                    {:      if(debug) System.out.println("\t regla 15b");
                            RESULT = new NodoDeclaracion(tipoVar.entero,variable,Integer.parseInt(size));
                     :}
             |   BOOL ID:variable SEMI
-                    {:
+                    {:     if(debug) System.out.println("\t regla 15c");
                            RESULT = new NodoDeclaracion(tipoVar.booleano,variable,1);
                     :}
             |   BOOL ID:variable LBRACKET NUM:size RBRACKET SEMI
-                    {:
+                    {:      if(debug) System.out.println("\t regla 15d");
                             RESULT = new NodoDeclaracion(tipoVar.booleano,variable,Integer.parseInt(size));
                     :}
           ;
@@ -188,6 +192,9 @@ stmt        ::= if_stmt:sif	{: if(debug) System.out.println("\t regla 3a");
             | write_stmt:sesc SEMI	{: if(debug) System.out.println("\t regla 3e");
 					RESULT=sesc;
 					:}
+			| for_stmt:sfor	{: if(debug) System.out.println("\t regla 3g");
+            						RESULT=sfor;
+            						:}
             | error	{: if(debug) System.out.println("\t regla 3f"); 
 				System.out.println("Ocurrio error en cup # 0004");
 				RESULT=null;
@@ -205,6 +212,12 @@ if_stmt     ::= IF exp:ex THEN stmt_seq:pthen END	{: if(debug) System.out.printl
 repeat_stmt ::= REPEAT stmt_seq:cuerpo UNTIL exp:prueba	{: if(debug) System.out.println("\t regla 5"); 
 							RESULT = new NodoRepeat(cuerpo,prueba);
 							:}
+		;
+
+for_stmt ::= FOR assign_stmt:ini COMMA exp:ex COMMA assign_stmt:loop LOOP stmt_seq:cuerpo END
+	            {: if(debug) System.out.println("\t regla 16");
+							RESULT = new NodoFor(ini, ex, loop, cuerpo);
+				:}
 		;
 
 assign_stmt ::= ID:variable ASSIGN exp:ex	{: if(debug) System.out.println("\t regla 6a");
