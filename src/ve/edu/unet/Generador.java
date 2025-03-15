@@ -134,10 +134,19 @@ public class Generador {
 		int direccion;
 		if(UtGen.debug)	UtGen.emitirComentario("-> asignacion");		
 		/* Genero el codigo para la expresion a la derecha de la asignacion */
-		generar(n.getExpresion());
 		/* Ahora almaceno el valor resultante */
 		direccion = tablaSimbolos.getDireccion(n.getIdentificador());
-		UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "asignacion: almaceno el valor para el id "+n.getIdentificador());
+		if(n.getDesplazamiento() == null) {
+			generar(n.getExpresion());
+			UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "asignacion: almaceno el valor para el id " + n.getIdentificador());
+		}
+		else{
+			UtGen.emitirRM("LDC", UtGen.DESP, direccion, 0, "cargo direccion base en registro DESP");
+			generar(n.getDesplazamiento());
+			UtGen.emitirRO("ADD", UtGen.DESP, UtGen.AC, UtGen.DESP, "calculo direccion real");
+			generar(n.getExpresion());
+			UtGen.emitirRM("ST", UtGen.AC, 0, UtGen.DESP, "cargar valor de identificador con desplazamiento: "+n.getIdentificador());
+		}
 		if(UtGen.debug)	UtGen.emitirComentario("<- asignacion");
 	}
 	
@@ -145,9 +154,18 @@ public class Generador {
 		NodoLeer n = (NodoLeer)nodo;
 		int direccion;
 		if(UtGen.debug)	UtGen.emitirComentario("-> leer");
-		UtGen.emitirRO("IN", UtGen.AC, 0, 0, "leer: lee un valor entero ");
 		direccion = tablaSimbolos.getDireccion(n.getIdentificador());
-		UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "leer: almaceno el valor entero leido en el id "+n.getIdentificador());
+		if(n.getDesplazamiento() == null) {
+			UtGen.emitirRO("IN", UtGen.AC, 0, 0, "leer: lee un valor entero ");
+			UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "leer: almaceno el valor entero leido en el id " + n.getIdentificador());
+		}
+		else{
+			UtGen.emitirRM("LDC", UtGen.DESP, direccion, 0, "cargo direccion base en registro DESP");
+			generar(n.getDesplazamiento());
+			UtGen.emitirRO("ADD", UtGen.DESP, UtGen.AC, UtGen.DESP, "calculo direccion real");
+			UtGen.emitirRO("IN", UtGen.AC, 0, 0, "leer: lee un valor entero ");
+			UtGen.emitirRM("ST", UtGen.AC, 0, UtGen.DESP, "cargar valor de identificador con desplazamiento: "+n.getIdentificador());
+		}
 		if(UtGen.debug)	UtGen.emitirComentario("<- leer");
 	}
 	
@@ -173,7 +191,15 @@ public class Generador {
 		int direccion;
 		if(UtGen.debug)	UtGen.emitirComentario("-> identificador");
 		direccion = tablaSimbolos.getDireccion(n.getNombre());
-		UtGen.emitirRM("LD", UtGen.AC, direccion, UtGen.GP, "cargar valor de identificador: "+n.getNombre());
+		if(n.getIndice() == null) {
+			UtGen.emitirRM("LD", UtGen.AC, direccion, UtGen.GP, "cargar valor de identificador: "+n.getNombre());
+		}
+		else{
+			UtGen.emitirRM("LDC", UtGen.DESP, direccion, 0, "cargo direccion base en registro DESP");
+			generar(n.getIndice());
+			UtGen.emitirRO("ADD", UtGen.DESP, UtGen.AC, UtGen.DESP, "calculo direccion real");
+			UtGen.emitirRM("LD", UtGen.AC, 0, UtGen.DESP, "cargar valor de identificador con desplazamiento: "+n.getNombre());
+		}
 		if(UtGen.debug)	UtGen.emitirComentario("-> identificador");
 	}
 

@@ -2,23 +2,26 @@ package ve.edu.unet.nodosAST;
 
 public class NodoLeer extends NodoBase {
 	private String id;
+	private NodoBase desplazamiento;
 
 	public NodoLeer(String identificador) {
 		super();
 		this.id = identificador;
+		this.desplazamiento = null;
 	}
 
-	public NodoLeer() {
+	public NodoLeer(String identificador, NodoBase desplazamiento) {
 		super();
-		id="";
+		this.id = identificador;
+		this.desplazamiento = desplazamiento;
 	}
 
 	public String getIdentificador() {
 		return id;
 	}
 
-	public void setExpresion(String identificador) {
-		this.id = identificador;
+	public NodoBase getDesplazamiento() {
+		return desplazamiento;
 	}
 
 }

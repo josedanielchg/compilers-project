@@ -207,11 +207,7 @@ repeat_stmt ::= REPEAT stmt_seq:cuerpo UNTIL exp:prueba	{: if(debug) System.out.
 							:}
 		;
 
-assign_stmt ::= ID:variable 	{: if(debug) System.out.println("\t regla 6 parte del medio"); 
-				/*lineanum=1000; //Pasar/Obtener la linea correcta por el Simbolo
-				String nombre = variable.getName();*/
-				:}
-			ASSIGN exp:ex	{: if(debug) System.out.println("\t regla 6 parte final");
+assign_stmt ::= ID:variable ASSIGN exp:ex	{: if(debug) System.out.println("\t regla 6a");
 					if(variable!=null)
 					RESULT = new NodoAsignacion(variable.toString(),ex);
 					else{
@@ -219,9 +215,18 @@ assign_stmt ::= ID:variable 	{: if(debug) System.out.println("\t regla 6 parte d
 					System.out.println("Ocurrio error en cup # 0001");
 					}
 					:}
+		   | ID:variable LBRACKET exp:desp RBRACKET ASSIGN exp:ex
+		   	{: if(debug) System.out.println("\t regla 6b");
+             					if(variable!=null)
+             					RESULT = new NodoAsignacion(variable.toString(),ex, desp);
+             					else{
+             					RESULT = null;
+             					System.out.println("Ocurrio error en cup # 0001");
+             					}
+             	:}
 		;
 
-read_stmt   ::= READ ID:variable	{: if(debug) System.out.println("\t regla 7"); 
+read_stmt   ::= READ ID:variable	{: if(debug) System.out.println("\t regla 7a");
 					System.out.println("Leyendo Variable");
 					if(variable!=null)
 					RESULT = new NodoLeer(variable.toString());
@@ -230,6 +235,15 @@ read_stmt   ::= READ ID:variable	{: if(debug) System.out.println("\t regla 7");
 					System.out.println("Ocurrio error en cup # 0002");
 					}
 					:}
+		 |  READ ID:variable LBRACKET exp:desp RBRACKET	{: if(debug) System.out.println("\t regla 7b");
+            					System.out.println("Leyendo Variable");
+            					if(variable!=null)
+            					RESULT = new NodoLeer(variable.toString(),desp);
+            					else{
+            					RESULT = null;
+            					System.out.println("Ocurrio error en cup # 0002");
+            					}
+            					:}
 		;
 
 write_stmt  ::= WRITE exp:ex	{: if(debug) System.out.println("\t regla 8"); 
