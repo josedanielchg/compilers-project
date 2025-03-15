@@ -2,14 +2,14 @@ package ve.edu.unet;
 
 public class RegistroSimbolo {
 	private String identificador;
-	private int NumLinea;
+	private int longitud;
 	private int DireccionMemoria;
 	
-	public RegistroSimbolo(String identificador, int numLinea,
+	public RegistroSimbolo(String identificador, int longitud,
 			int direccionMemoria) {
 		super();
 		this.identificador = identificador;
-		NumLinea = numLinea;
+		this.longitud = longitud;
 		DireccionMemoria = direccionMemoria;
 	}
 
@@ -17,8 +17,8 @@ public class RegistroSimbolo {
 		return identificador;
 	}
 
-	public int getNumLinea() {
-		return NumLinea;
+	public int getLongitud() {
+		return longitud;
 	}
 
 	public int getDireccionMemoria() {

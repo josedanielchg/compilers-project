@@ -69,9 +69,14 @@ terminal OVER;
 terminal LPAREN;
 terminal RPAREN;
 terminal SEMI;
+terminal INT;
+terminal BOOL;
+terminal LBRACKET;
+terminal RBRACKET;
 
 /* Simbolos No Terminales */
 non terminal program;
+non terminal NodoBase all_stmts;
 non terminal NodoBase stmt_seq;
 non terminal NodoBase stmt;
 non terminal NodoBase if_stmt;
@@ -79,6 +84,8 @@ non terminal NodoBase repeat_stmt;
 non terminal NodoBase assign_stmt;
 non terminal NodoBase read_stmt;
 non terminal NodoBase write_stmt;
+non terminal NodoBase decl_stmt;
+non terminal NodoBase decl_seq;
 non terminal NodoBase exp;
 non terminal NodoBase simple_exp;
 non terminal NodoBase term;
@@ -91,10 +98,63 @@ precedence left TIMES;
 
 
 /* REGLAS GRAMATICALES */
-program     ::= stmt_seq:s	{: if(debug) System.out.println("\t regla 1"); 
-					ast = s;
-					:}
+program     ::= all_stmts:s	{: if(debug) System.out.println("\t regla 1");
+					            ast = s;
+					           :}
 		;
+
+all_stmts   ::= stmt_seq:s {: if(debug) System.out.println("\t regla 13a");
+                           		RESULT=s;
+                           	:}
+            | decl_seq:d stmt_seq:s
+                        {: if(debug) System.out.println("\t regla 13b");
+                                  NodoBase hijoActual = d;
+                                  if(hijoActual !=null){
+                                  while(hijoActual.TieneHermano()){
+                                  		hijoActual = hijoActual.getHermanoDerecha();
+                                    }
+                                    hijoActual.setHermanoDerecha(s);
+                                    RESULT=d;
+                                  }else{
+                                  	RESULT=s;
+                                  }
+                         :}
+        ;
+
+decl_seq    ::= decl_seq:ini decl_stmt:d	{: if(debug) System.out.println("\t regla 14a");
+						NodoBase hijoActual = ini;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(d);
+							RESULT=ini;
+						}else{
+							RESULT=d;
+						}
+						:}
+            | decl_stmt:d	{: if(debug) System.out.println("\t regla 14b");
+				RESULT=d;
+				:}
+		;
+
+decl_stmt  ::=  INT ID:variable SEMI
+                     {:
+                            RESULT = new NodoDeclaracion(tipoVar.entero,variable,1);
+                     :}
+            |   INT ID:variable LBRACKET NUM:size RBRACKET SEMI
+                    {:
+                           RESULT = new NodoDeclaracion(tipoVar.entero,variable,Integer.parseInt(size));
+                    :}
+            |   BOOL ID:variable SEMI
+                    {:
+                           RESULT = new NodoDeclaracion(tipoVar.booleano,variable,1);
+                    :}
+            |   BOOL ID:variable LBRACKET NUM:size RBRACKET SEMI
+                    {:
+                            RESULT = new NodoDeclaracion(tipoVar.booleano,variable,Integer.parseInt(size));
+                    :}
+          ;
 
 stmt_seq    ::= stmt_seq:ini stmt:sent	{: if(debug) System.out.println("\t regla 2a");
 						NodoBase hijoActual = ini;
@@ -177,7 +237,7 @@ write_stmt  ::= WRITE exp:ex	{: if(debug) System.out.println("\t regla 8");
 					:}
 		;
 
-exp         ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println("\t regla 9a"); 
+exp      ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println("\t regla 9a");
 								RESULT = new NodoOperacion(exI,tipoOp.menor,exD);
 								:} 
 		| simple_exp:exI EQ simple_exp:exD	{: if(debug) System.out.println("\t regla 9b"); 
@@ -231,6 +291,15 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(debug) System.out.println("\t regla 1
 						System.out.println("Ocurrio error en cup # 0005");
 					}
 					:}
+	    | ID:variable LBRACKET exp:ex RBRACKET	{: if(debug) System.out.println("\t regla 12e");
+        					if(variable!=null){
+        						System.out.println("Construyendo Nodo ID para Lexema: "+ variable.toString());
+        						RESULT= new NodoIdentificador(variable.toString(), ex);
+        					}else{
+        						RESULT = null;
+        						System.out.println("Ocurrio error en cup # 0005");
+        					}
+        					:}
 		| error	{: if(debug) System.out.println("\t regla 12d"); 
 				System.out.println("Ocurrio error en cup # 0003");
 				RESULT=null;

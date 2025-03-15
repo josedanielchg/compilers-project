@@ -9,7 +9,9 @@ public class Util {
 		  sangria+=2;
 		  while (raiz != null) {
 		    printSpaces();
-		    if (raiz instanceof  NodoIf)
+			if (raiz instanceof  NodoDeclaracion)
+				System.out.println("Declaracion");
+		    else if (raiz instanceof  NodoIf)
 		    	System.out.println("If");
 		    else if (raiz instanceof  NodoRepeat)
 		    	System.out.println("Repeat");
@@ -30,7 +32,19 @@ public class Util {
 		    else System.out.println("Tipo de nodo desconocido");;
 		    
 		    /* Hago el recorrido recursivo */
-		    if (raiz instanceof  NodoIf){
+			  if (raiz instanceof NodoDeclaracion){
+				  printSpaces();
+				  System.out.println("**Tipo variable**");
+				  System.out.println(((NodoDeclaracion)raiz).getTipoVariable());
+				  System.out.println("**Nombre variable**");
+				  System.out.println(((NodoDeclaracion)raiz).getIdentificador());
+				  int longitud = ((NodoDeclaracion)raiz).getLongitud();
+				  if(longitud > 1){
+					  System.out.println("**Longitud**");
+					  System.out.println(((NodoDeclaracion)raiz).getLongitud());
+				  }
+			  }
+		    else if (raiz instanceof  NodoIf){
 		    	printSpaces();
 		    	System.out.println("**Prueba IF**");
 		    	imprimirAST(((NodoIf)raiz).getPrueba());
