@@ -238,11 +238,15 @@ public class Generador {
 		/* Ahora cargo/saco de la pila el valor izquierdo */
 		UtGen.emitirRM("LD", UtGen.AC1, ++desplazamientoTmp, UtGen.MP, "op: pop o cargo de la pila el valor izquierdo en AC1");
 		switch(n.getOperacion()){
-			case	mas:	UtGen.emitirRO("ADD", UtGen.AC, UtGen.AC1, UtGen.AC, "op: +");		
+			case	mas:
+			case    or:
+							UtGen.emitirRO("ADD", UtGen.AC, UtGen.AC1, UtGen.AC, "op: +");
 							break;
 			case	menos:	UtGen.emitirRO("SUB", UtGen.AC, UtGen.AC1, UtGen.AC, "op: -");
 							break;
-			case	por:	UtGen.emitirRO("MUL", UtGen.AC, UtGen.AC1, UtGen.AC, "op: *");
+			case	por:
+			case    and:
+							UtGen.emitirRO("MUL", UtGen.AC, UtGen.AC1, UtGen.AC, "op: *");
 							break;
 			case	entre:	UtGen.emitirRO("DIV", UtGen.AC, UtGen.AC1, UtGen.AC, "op: /");
 							break;
@@ -286,6 +290,9 @@ public class Generador {
 							UtGen.emitirRM("LDC", UtGen.AC, 0, UtGen.AC, "caso de falso (AC=0)");
 							UtGen.emitirRM("LDA", UtGen.PC, 1, UtGen.PC, "Salto incodicional a direccion: PC+1 (es falso evito colocarlo verdadero)");
 							UtGen.emitirRM("LDC", UtGen.AC, 1, UtGen.AC, "caso de verdadero (AC=1)");
+							break;
+			case  not:		UtGen.emitirRM("JNE", UtGen.AC1, 1, UtGen.PC, "op not, si es diferente de cero, salto");
+							UtGen.emitirRM("LDC", UtGen.AC, 1, UtGen.AC, "caso de falso, asigno verdadero (AC=1)");
 							break;
 			default:
 							UtGen.emitirComentario("BUG: tipo de operacion desconocida");

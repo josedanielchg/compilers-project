@@ -62,6 +62,10 @@ terminal String NUM;
 terminal ASSIGN;
 terminal EQ;
 terminal LT;
+terminal GT;
+terminal LE;
+terminal GE;
+terminal NE;
 terminal PLUS;
 terminal MINUS;
 terminal TIMES;
@@ -77,6 +81,9 @@ terminal FOR;
 terminal LOOP;
 terminal COMMA;
 terminal MOD;
+terminal AND;
+terminal OR;
+terminal NOT;
 
 /* Simbolos No Terminales */
 non terminal program;
@@ -92,6 +99,7 @@ non terminal NodoBase for_stmt;
 non terminal NodoBase decl_stmt;
 non terminal NodoBase decl_seq;
 non terminal NodoBase exp;
+non terminal NodoBase logic_exp;
 non terminal NodoBase simple_exp;
 non terminal NodoBase term;
 non terminal NodoBase factor;
@@ -265,7 +273,25 @@ write_stmt  ::= WRITE exp:ex	{: if(debug) System.out.println("\t regla 8");
 					:}
 		;
 
-exp      ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println("\t regla 9a");
+exp   ::= logic_exp:exI AND logic_exp:exD
+            {: if(debug) System.out.println("\t regla 17a");
+            	RESULT = new NodoOperacion(exI,tipoOp.and,exD);
+            :}
+          | logic_exp:exI OR logic_exp:exD
+              {: if(debug) System.out.println("\t regla 17b");
+                RESULT = new NodoOperacion(exI,tipoOp.or,exD);
+              :}
+          | NOT logic_exp:ex
+              {: if(debug) System.out.println("\t regla 17c");
+                 RESULT = new NodoOperacion(ex,tipoOp.not,new NodoValor(0));
+              :}
+          | logic_exp:ex
+               {: if(debug) System.out.println("\t regla 17d");
+                  RESULT = ex;
+            :}
+       ;
+
+logic_exp   ::= simple_exp:exI LT simple_exp:exD	{: if(debug) System.out.println("\t regla 9a");
 								RESULT = new NodoOperacion(exI,tipoOp.menor,exD);
 								:} 
 		| simple_exp:exI EQ simple_exp:exD	{: if(debug) System.out.println("\t regla 9b"); 
