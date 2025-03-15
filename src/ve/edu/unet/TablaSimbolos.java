@@ -20,19 +20,19 @@ public class TablaSimbolos {
 	public void cargarTabla(NodoBase raiz){
 		while (raiz != null) {
 			if (raiz instanceof NodoDeclaracion){
-				InsertarSimbolo(((NodoDeclaracion)raiz).getIdentificador(), ((NodoDeclaracion) raiz).getLongitud());
+				InsertarSimbolo(((NodoDeclaracion)raiz).getIdentificador(), ((NodoDeclaracion) raiz).getLongitud(), ((NodoDeclaracion) raiz).getTipoVariable());
 			}
 	    	raiz = raiz.getHermanoDerecha();
 	  }
 	}
 	
 	//true es nuevo no existe se insertara, false ya existe NO se vuelve a insertar 
-	public boolean InsertarSimbolo(String identificador, int longitud){
+	public boolean InsertarSimbolo(String identificador, int longitud, tipoVar tipoVariable) {
 		RegistroSimbolo simbolo;
 		if(tabla.containsKey(identificador)){
 			return false;
 		}else{
-			simbolo= new RegistroSimbolo(identificador,longitud,direccion);
+			simbolo= new RegistroSimbolo(identificador,longitud,direccion, tipoVariable);
 			direccion+=longitud;
 			tabla.put(identificador,simbolo);
 			return true;			
